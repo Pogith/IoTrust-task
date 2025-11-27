@@ -1,5 +1,12 @@
+import AppLayout from '@/components/AppLayout';
+import BannerSection from '@/features/home/components/BannerSection';
+
 function HomePage() {
-  return <div>HomePage</div>;
+  return (
+    <AppLayout>
+      <BannerSection />
+    </AppLayout>
+  );
 }
 
 export default HomePage;
