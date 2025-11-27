@@ -18,3 +18,10 @@ export type Banner = {
   description?: string;
   ctaText?: string;
 };
+
+export type FavoriteData = {
+  id: string;
+  title: string;
+  imageSrc: string;
+  link: string;
+};

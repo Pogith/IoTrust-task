@@ -1,0 +1,20 @@
+[
+  {
+    "id": "opensea",
+    "title": "OpenSea, the largest NFT marketplace",
+    "imageSrc": "/images/icon_opensea.png",
+    "link": "https://opensea.io"
+  },
+  {
+    "id": "moonpay",
+    "title": "MoonPay",
+    "imageSrc": "/images/icon_moonpay.png",
+    "link": "https://buy.moonpay.com/v2/buyo"
+  },
+  {
+    "id": "rarible",
+    "title": "Rarible - NFT Marketplace for Brands, Communities and Traders",
+    "imageSrc": "/images/icon_rarible.png",
+    "link": "https://rarible.com/"
+  }
+]

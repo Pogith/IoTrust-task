@@ -1,5 +1,5 @@
 import { clientHttp } from '@/lib/axios';
-import type { BannerData } from '@/types/discovery';
+import type { BannerData, FavoriteData } from '@/types/discovery';
 import { delay } from '@/utils/delay';
 
 const APP_ENV = import.meta.env.VITE_APP_ENV;
@@ -25,4 +25,24 @@ const fetchBanners = async (): Promise<BannerData[]> => {
   return response.data;
 };
 
-export { fetchBanners };
+const fetchMockFavorites = async () => {
+  await delay(2000);
+
+  const response = await fetch('/mock-api/favorites.json');
+
+  const data: FavoriteData[] = await response.json();
+
+  return data;
+};
+
+const fetchFavorites = async () => {
+  if (isDev) {
+    return fetchMockFavorites();
+  }
+
+  const response = await clientHttp.get<FavoriteData[]>({ path: '/favorites' });
+
+  return response.data;
+};
+
+export { fetchBanners, fetchFavorites };
