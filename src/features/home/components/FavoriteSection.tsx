@@ -1,3 +1,5 @@
+import { Fragment, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bookmark } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -8,9 +10,19 @@ import { convertImageSrc } from '@/utils/convertImageSrc';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import FavoriteDeleteDialog from './FavoriteDeleteDialog';
+import useDeleteFavoriteMutation from '../hooks/useDeleteFavoriteMutation';
 
 function FavoriteSection() {
+  const { t } = useTranslation();
+
+  const [selectedFavorite, setSelectedFavorite] = useState<FavoriteData | null>(
+    null,
+  );
+
   const { data: favoritesData, isLoading } = useFavoritesQuery();
+
+  const { mutateAsync: deleteFavorite } = useDeleteFavoriteMutation();
 
   const favorites: FavoriteData[] = (favoritesData ?? []).map((favorite) => {
     const imageSrc = convertImageSrc(favorite.imageSrc);
@@ -21,9 +33,27 @@ function FavoriteSection() {
     };
   });
 
+  const handleDeleteButtonClick = (favorite: FavoriteData) => {
+    setSelectedFavorite(favorite);
+  };
+
+  const handleDeleteDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      setSelectedFavorite(null);
+    }
+  };
+
+  const handleDeleteFavorite = async () => {
+    if (!selectedFavorite) return;
+
+    await deleteFavorite(selectedFavorite.id);
+
+    setSelectedFavorite(null);
+  };
+
   return (
     <section className={cn('ml-4', 'mr-4')}>
-      <h2 className={cn('text-lg', 'mb-1')}>즐겨찾기</h2>
+      <h2 className={cn('text-lg', 'mb-1')}>{t('dapp_favorite_title')}</h2>
 
       <Separator />
 
@@ -46,7 +76,7 @@ function FavoriteSection() {
 
       {!isLoading &&
         favorites.map((favorite) => (
-          <>
+          <Fragment key={favorite.id}>
             <div
               className={cn(
                 'flex',
@@ -109,16 +139,22 @@ function FavoriteSection() {
                     'text-neutral-500',
                   )}
                   variant="ghost"
-                  // onClick={() => setIsOpenDeleteDialog(true)}
+                  onClick={() => handleDeleteButtonClick(favorite)}
                 >
                   <Bookmark className={cn('w-9', 'h-9', 'text-gray-400')} />
-                  삭제
+                  {t('dapp_favorite_delete')}
                 </Button>
               </div>
             </div>
             <Separator />
-          </>
+          </Fragment>
         ))}
+
+      <FavoriteDeleteDialog
+        open={!!selectedFavorite}
+        onOpenChange={handleDeleteDialogOpenChange}
+        onDeleteFavorite={handleDeleteFavorite}
+      />
     </section>
   );
 }

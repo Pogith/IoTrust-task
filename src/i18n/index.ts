@@ -11,10 +11,8 @@ i18n
   .init({
     lng: 'ko',
     resources: {
-      resources: {
-        ko: { translation: ko },
-        en: { translation: en },
-      },
+      ko: { translation: ko },
+      en: { translation: en },
     },
     fallbackLng: 'en',
   });
