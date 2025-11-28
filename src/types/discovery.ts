@@ -36,3 +36,15 @@ export type DAppsData = {
   note?: string;
   supported_network?: string;
 };
+
+export type DApp = {
+  id: number;
+  title: string;
+  imageSrc: string;
+  description?: string;
+  url: string;
+  pngSrc?: string;
+  jpgSrc?: string;
+  note?: string;
+  supported_network?: string;
+};

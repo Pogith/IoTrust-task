@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/incompatible-library */
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import useDAppsQuery from '../hooks/useDAppsQuery';
+import type { DApp } from '@/types/discovery';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { convertImageSrc } from '@/utils/convertImageSrc';
 import DAppImage from './DAppImage';
+import DAppDetailSheet from './DAppDetailSheet';
 
 const DEFAULT_LANGUAGE = 'ko';
 
@@ -22,6 +24,8 @@ function DAppsSection() {
 
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const [selectedDApp, setSelectedDApp] = useState<DApp | null>(null);
+
   const {
     data: dappsData,
     isLoading,
@@ -31,12 +35,16 @@ function DAppsSection() {
   } = useDAppsQuery();
 
   const allRows = dappsData ? dappsData.pages.flatMap((d) => d.rows) : [];
-  const dapps = allRows.map((row) => {
+  const dapps: DApp[] = allRows.map((row) => {
     const imageSrc = convertImageSrc(row.imageSrc);
     const description = isKoLng ? row.description_ko : row.description_en;
 
     return {
-      ...row,
+      id: row.id,
+      title: row.title,
+      url: row.url,
+      note: row.note,
+      supported_network: row.supported_network,
       imageSrc,
       description,
     };
@@ -70,6 +78,16 @@ function DAppsSection() {
     isFetchingNextPage,
     lastItem,
   ]);
+
+  const handleDAppItemClick = (item: DApp) => {
+    setSelectedDApp(item);
+  };
+
+  const handleDAppDetailSheetOpenChange = (open: boolean) => {
+    if (!open) {
+      setSelectedDApp(null);
+    }
+  };
 
   return (
     <section className={cn('ml-4', 'mr-4')}>
@@ -122,7 +140,7 @@ function DAppsSection() {
                     ) : null
                   ) : (
                     <Fragment key={item.id}>
-                      <div
+                      <button
                         className={cn(
                           'flex',
                           'items-center',
@@ -130,6 +148,8 @@ function DAppsSection() {
                           'py-4',
                           'cursor-pointer',
                         )}
+                        type="button"
+                        onClick={() => handleDAppItemClick(item)}
                       >
                         <div
                           className={cn(
@@ -145,6 +165,7 @@ function DAppsSection() {
                             className={cn(
                               'flex',
                               'flex-col',
+                              'items-start',
                               'overflow-hidden',
                               'max-w-70',
                             )}
@@ -163,7 +184,7 @@ function DAppsSection() {
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </button>
                       <Separator />
                     </Fragment>
                   )}
@@ -173,6 +194,12 @@ function DAppsSection() {
           </div>
         </div>
       )}
+
+      <DAppDetailSheet
+        dapp={selectedDApp}
+        open={!!selectedDApp}
+        onOpenChange={handleDAppDetailSheetOpenChange}
+      />
     </section>
   );
 }
