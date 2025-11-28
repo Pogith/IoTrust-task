@@ -25,3 +25,14 @@ export type FavoriteData = {
   imageSrc: string;
   link: string;
 };
+
+export type DAppsData = {
+  id: number;
+  title: string;
+  imageSrc: string;
+  url: string;
+  description_ko?: string;
+  description_en?: string;
+  note?: string;
+  supported_network?: string;
+};

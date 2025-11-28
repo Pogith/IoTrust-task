@@ -1,6 +1,7 @@
 import { clientHttp } from '@/lib/axios';
-import type { BannerData, FavoriteData } from '@/types/discovery';
+import type { BannerData, DAppsData, FavoriteData } from '@/types/discovery';
 import { delay } from '@/utils/delay';
+import { mockDApps } from '@/mocks/mockDApps';
 
 const APP_ENV = import.meta.env.VITE_APP_ENV;
 const isDev = APP_ENV === 'dev';
@@ -45,4 +46,35 @@ const fetchFavorites = async () => {
   return response.data;
 };
 
-export { fetchBanners, fetchFavorites };
+const fetchMockDApps = async (
+  limit: number,
+  page: number,
+): Promise<{ rows: DAppsData[]; nextPage: number | null }> => {
+  const start = page * limit;
+  const end = start + limit;
+
+  // NOTE: mockDApps 반복해서 1000개로 확장
+  const repeatedDApps = Array.from({ length: 250 }).flatMap(() => mockDApps);
+
+  // NOTE: 이번 page에 해당하는 실제 rows 구하기
+  const selectedDApps = repeatedDApps.slice(start, end);
+
+  const rows = selectedDApps.map((item, i) => {
+    const id = start + i;
+    return {
+      ...item,
+      id,
+    };
+  });
+
+  await delay(500);
+
+  const hasMore = page < 1001;
+
+  return {
+    rows,
+    nextPage: hasMore ? page + 1 : null,
+  };
+};
+
+export { fetchBanners, fetchFavorites, fetchMockDApps };
